@@ -1,24 +1,25 @@
 version: '3.8'
-
 services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:80"   # external:internal
-    depends_on:
-      - backend
-
   backend:
     build: ./backend
     ports:
-      - "5000:80"   # external:internal
+      - "8080:80"
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=SanaVitaDb;User Id=sa;Password=sa;"
     depends_on:
-      - database
+      - sqlserver
 
-  database:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+
+  sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
+      SA_PASSWORD: "sa"
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "YourStrongPassword123"
     ports:
       - "1433:1433"
+    volumes:
+      - ./database/init:/docker-entrypoint-initdb.d
