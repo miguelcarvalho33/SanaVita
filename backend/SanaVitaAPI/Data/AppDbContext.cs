@@ -139,6 +139,11 @@ public partial class AppDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<MedicationSchedule> MedicationSchedules { get; set; }
 
+    public DbSet<AdministrationEvent> AdministrationEvents { get; set; }
+    public DbSet<DispensingEvent> DispensingEvents { get; set; }
+    public DbSet<InventoryItem> InventoryItems { get; set; }
+    public DbSet<ExceptionEvent> ExceptionEvents { get; set; }
+    public DbSet<BarcodeScanLog> BarcodeScanLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1501,6 +1506,30 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(1)
                 .HasColumnName("IND_ATIVO");
         });
+
+        modelBuilder.Entity<User>()
+               .Property(u => u.Role)
+               .HasConversion<string>();
+
+        modelBuilder.Entity<MedicationRequest>()
+            .Property(m => m.Status)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.Type)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Notification>()
+            .Property(n => n.Priority)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<MedicationSchedule>()
+            .Property(m => m.Frequency)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<MedicationSchedule>()
+            .Property(m => m.DosageUnits)
+            .HasConversion<string>();
 
         OnModelCreatingPartial(modelBuilder);
     }
