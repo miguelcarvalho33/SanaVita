@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SanaVitaAPI.Interfaces;
 using SanaVitaAPI.Models;
-using SanaVitaAPI.Repositories;
 
 namespace SanaVitaAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Caregiver,Patient")]
     public class MedicationRequestController : ControllerBase
     {
         private readonly IMedicationRequestRepository _repository;
@@ -17,6 +18,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Caregiver")]
         public async Task<IActionResult> GetAll() =>
             Ok(await _repository.GetAllAsync());
 
@@ -28,6 +30,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Patient,Caregiver")]
         public async Task<IActionResult> Create([FromBody] MedicationRequest request)
         {
             await _repository.AddAsync(request);
@@ -35,6 +38,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpPut("{id}/approve")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Approve(int id)
         {
             await _repository.ApproveAsync(id);
@@ -42,6 +46,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpPut("{id}/reject")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Reject(int id, [FromBody] string reason)
         {
             await _repository.RejectAsync(id, reason);

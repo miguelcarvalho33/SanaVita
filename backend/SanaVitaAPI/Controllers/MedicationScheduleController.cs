@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SanaVitaAPI.Interfaces;
 using SanaVitaAPI.Models;
-using SanaVitaAPI.Repositories;
 
 namespace SanaVitaAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Caregiver,Patient")]
     public class MedicationScheduleController : ControllerBase
     {
         private readonly IMedicationScheduleRepository _repository;
@@ -28,6 +29,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Caregiver")]
         public async Task<IActionResult> Create([FromBody] MedicationSchedule schedule)
         {
             await _repository.AddAsync(schedule);
@@ -35,6 +37,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Caregiver")]
         public async Task<IActionResult> Update(int id, [FromBody] MedicationSchedule schedule)
         {
             if (id != schedule.Id) return BadRequest("ID mismatch");

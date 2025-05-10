@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SanaVitaAPI.Interfaces;
 using SanaVitaAPI.Models;
-using SanaVitaAPI.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -23,6 +23,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpPost("register")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             if (await _userRepository.ExistsAsync(request.Username))
@@ -41,6 +42,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var user = await _userRepository.GetByUsernameAsync(request.Username);

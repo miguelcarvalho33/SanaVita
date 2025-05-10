@@ -9,5 +9,6 @@ namespace SanaVitaAPI.Interfaces
         Task<IEnumerable<User>> GetAllAsync();
         Task AddAsync(User user);
         Task<bool> ExistsAsync(string username);
+        Task AnonymizeAsync(int userId);
     }
 }

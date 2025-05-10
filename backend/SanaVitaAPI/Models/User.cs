@@ -25,6 +25,7 @@ namespace SanaVitaAPI.Models
         [EmailAddress]
         public string? Email { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
         public ICollection<MedicationRequest> MedicationRequests { get; set; }
         public ICollection<Notification> Notifications { get; set; }
     }

@@ -18,10 +18,10 @@ namespace SanaVitaAPI.Repositories
             => await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
         public async Task<User?> GetByIdAsync(int id)
-            => await _context.Users.FindAsync(id);
+            => await _context.Users.FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
 
         public async Task<IEnumerable<User>> GetAllAsync()
-            => await _context.Users.ToListAsync();
+            => await _context.Users.Where(u => !u.IsDeleted).ToListAsync();
 
         public async Task AddAsync(User user)
         {
@@ -31,5 +31,19 @@ namespace SanaVitaAPI.Repositories
 
         public async Task<bool> ExistsAsync(string username)
             => await _context.Users.AnyAsync(u => u.Username == username);
+
+        public async Task AnonymizeAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return;
+
+            user.FullName = "anónimo";
+            user.Email = null;
+            user.PasswordHash = string.Empty;
+            user.IsDeleted = true;
+
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

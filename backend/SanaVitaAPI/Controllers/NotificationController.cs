@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SanaVitaAPI.Interfaces;
 using SanaVitaAPI.Models;
-using SanaVitaAPI.Repositories;
 
 namespace SanaVitaAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Patient,Caregiver")]
     public class NotificationController : ControllerBase
     {
         private readonly INotificationRepository _repository;
@@ -28,6 +29,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Caregiver")]
         public async Task<IActionResult> Create([FromBody] Notification notification)
         {
             await _repository.AddAsync(notification);

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SanaVitaAPI.Repositories;
 
 namespace SanaVitaAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Pharmacist,Caregiver,Patient")]
     public class ProdutoController : ControllerBase
     {
         private readonly IProdutoRepository _repository;
@@ -16,6 +18,7 @@ namespace SanaVitaAPI.Controllers
 
         // GET: api/Produto
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var produtos = await _repository.GetAllAsync();
@@ -27,10 +30,7 @@ namespace SanaVitaAPI.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var produto = await _repository.GetByIdAsync(id);
-            if (produto == null)
-                return NotFound();
-
-            return Ok(produto);
+            return produto == null ? NotFound() : Ok(produto);
         }
     }
 }

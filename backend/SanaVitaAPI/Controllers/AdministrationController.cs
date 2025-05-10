@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SanaVitaAPI.Interfaces;
 using SanaVitaAPI.Models;
 using SanaVitaAPI.Repositories;
@@ -7,6 +8,7 @@ namespace SanaVitaAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Caregiver")]
     public class AdministrationController : ControllerBase
     {
         private readonly IAdministrationRepository _repository;
@@ -28,6 +30,7 @@ namespace SanaVitaAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Caregiver")]
         public async Task<IActionResult> Record([FromBody] AdministrationEvent admin)
         {
             await _repository.RecordAsync(admin);
