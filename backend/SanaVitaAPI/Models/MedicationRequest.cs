@@ -28,6 +28,13 @@ namespace SanaVitaAPI.Models
         public User User { get; set; }
         [ForeignKey("EMB_ID")]
         public Embalagem Embalagem { get; set; }
+
+        [Required]
+        public bool IsForSelf { get; set; }
+
+        [StringLength(100)]
+        public string? RecipientName { get; set; }
+
     }
 }
 

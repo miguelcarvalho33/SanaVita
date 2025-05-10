@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SanaVitaAPI.Interfaces;
 using SanaVitaAPI.Models;
+using SanaVitaAPI.Repositories;
 
 namespace SanaVitaAPI.Controllers
 {
@@ -33,6 +34,12 @@ namespace SanaVitaAPI.Controllers
         [Authorize(Roles = "Patient,Caregiver")]
         public async Task<IActionResult> Create([FromBody] MedicationRequest request)
         {
+            // Validação específica do campo RecipientName
+            if (!request.IsForSelf && string.IsNullOrWhiteSpace(request.RecipientName))
+            {
+                return BadRequest("RecipientName é obrigatório se o pedido não for para o próprio.");
+            }
+
             await _repository.AddAsync(request);
             return Ok(request);
         }

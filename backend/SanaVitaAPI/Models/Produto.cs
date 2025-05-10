@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SanaVitaAPI.Models;
 
@@ -72,4 +73,11 @@ public partial class Produto
     public virtual RefTipoProduto? TipoProduto { get; set; }
 
     public virtual RefTitularAim? TitularAim { get; set; }
+
+    public virtual ICollection<LnkProdAtc> LnkProdAtcs { get; set; } = new List<LnkProdAtc>();
+
+    [StringLength(255)]
+    public string? ReferenceUrl { get; set; }
+
+
 }

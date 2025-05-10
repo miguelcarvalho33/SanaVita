@@ -22,7 +22,23 @@ namespace SanaVitaAPI.Controllers
         public async Task<IActionResult> GetAll()
         {
             var produtos = await _repository.GetAllAsync();
-            return Ok(produtos);
+
+            var result = produtos.Select(p => new
+            {
+                Id = p.ProdId,
+                Nome = p.Nome,
+                Dosagem = p.Dosagem,
+                Marca = p.Marca,
+                Modelo = p.Modelo,
+                ReferenceUrl = p.ReferenceUrl,
+                AtcCodes = p.LnkProdAtcs
+                    .Where(l => l.AtcCodNavigation != null)
+                    .Select(l => l.AtcCodNavigation!.AtcCod)
+                    .Distinct()
+                    .ToList()
+            });
+
+            return Ok(result);
         }
 
         // GET: api/Produto/5
@@ -30,7 +46,24 @@ namespace SanaVitaAPI.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var produto = await _repository.GetByIdAsync(id);
-            return produto == null ? NotFound() : Ok(produto);
+            if (produto == null) return NotFound();
+
+            var result = new
+            {
+                Id = produto.ProdId,
+                Nome = produto.Nome,
+                Dosagem = produto.Dosagem,
+                Marca = produto.Marca,
+                Modelo = produto.Modelo,
+                ReferenceUrl = produto.ReferenceUrl,
+                AtcCodes = produto.LnkProdAtcs
+                    .Where(l => l.AtcCodNavigation != null)
+                    .Select(l => l.AtcCodNavigation!.AtcCod)
+                    .Distinct()
+                    .ToList()
+            };
+
+            return Ok(result);
         }
     }
 }

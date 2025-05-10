@@ -14,10 +14,17 @@ namespace SanaVitaAPI.Repositories
         }
 
         public async Task<IEnumerable<Produto>> GetAllAsync()
-            => await _context.Produtos.Include(p => p.Embalagems).ToListAsync();
+            => await _context.Produtos
+                .Include(p => p.Embalagems)
+                .Include(p => p.LnkProdAtcs)
+                    .ThenInclude(link => link.AtcCodNavigation)
+                .ToListAsync();
 
         public async Task<Produto?> GetByIdAsync(int id)
-            => await _context.Produtos.Include(p => p.Embalagems)
+            => await _context.Produtos
+                .Include(p => p.Embalagems)
+                .Include(p => p.LnkProdAtcs)
+                    .ThenInclude(link => link.AtcCodNavigation)
                 .FirstOrDefaultAsync(p => p.ProdId == id);
     }
 }
