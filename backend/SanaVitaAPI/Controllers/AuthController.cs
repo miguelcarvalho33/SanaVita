@@ -31,7 +31,7 @@ namespace SanaVitaAPI.Controllers
             var user = new User
             {
                 Username = request.Username,
-                FullName = request.FullName,
+                Name = request.FullName,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 Role = Enum.Parse<Role>(request.Role, true)
             };

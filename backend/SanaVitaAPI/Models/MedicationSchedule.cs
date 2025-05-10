@@ -1,17 +1,37 @@
-﻿using SanaVitaAPI.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class MedicationSchedule
+namespace SanaVitaAPI.Models
 {
-    public int Id { get; set; }
 
-    public int UserId { get; set; }
-    public int MedicationRequestId { get; set; }
+    public class MedicationSchedule
+    {
+        public int Id { get; set; }
 
-    public string Dosage { get; set; } // "1", "0.5", etc.
-    public string DosageUnits { get; set; }
-    public string Frequency { get; set; }
-    public string Duration { get; set; }  // Ex: "7 days"
+        [Required]
+        public int UserId { get; set; }
 
-    public User User { get; set; }
-    public MedicationRequest MedicationRequest { get; set; }
+        [Required]
+        public int MedicationRequestId { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string Dosage { get; set; } = string.Empty;
+
+        [Required]
+        public string DosageUnits { get; set; }
+
+        [Required]
+        public string Frequency { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string FrequencyTimes { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(50)]
+        public string Duration { get; set; } = string.Empty;
+
+        public User User { get; set; }
+        public MedicationRequest MedicationRequest { get; set; }
+    }
 }
