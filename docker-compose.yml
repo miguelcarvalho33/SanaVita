@@ -1,19 +1,5 @@
 version: '3.8'
 services:
-  backend:
-    build: ./backend
-    ports:
-      - "8080:80"
-    environment:
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=SanaVitaDb;User Id=sa;Password=sa;"
-    depends_on:
-      - sqlserver
-
-  frontend:
-    build: ./frontend
-    ports:
-      - "5173:80"
-
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
@@ -21,5 +7,23 @@ services:
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
-    volumes:
-      - ./database/init:/docker-entrypoint-initdb.d
+    # volumes:  # Comentado porque não funciona para seed scripts em SQL Server
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:80"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=SanaVitaDb;User Id=sa;Password=sa;
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - sqlserver
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    environment:
+      - REACT_APP_API_URL=http://backend/api
+    depends_on:
+      - backend
