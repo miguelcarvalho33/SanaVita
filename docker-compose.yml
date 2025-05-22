@@ -14,7 +14,7 @@ services:
     ports:
       - "8080:80"
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=SanaVitaDb;User Id=sa;Password=sa;
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=SanaVita;User Id=sa;Password=sa;
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - sqlserver
