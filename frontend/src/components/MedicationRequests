@@ -1,0 +1,139 @@
+import React, { useEffect, useState } from 'react';
+import { apiGet } from '../api';
+
+const API_BASE = process.env.REACT_APP_API_URL || "/api";
+
+function MedicationRequests() {
+  const [requests, setRequests] = useState([]);
+  const [msg, setMsg] = useState('');
+  const [novo, setNovo] = useState({
+    utenteNome: "",
+    produtoNome: "",
+    quantidade: "",
+    dataPedido: ""
+  });
+  const [edit, setEdit] = useState(null);
+
+  const token = localStorage.getItem('token');
+
+  // GET
+  const loadRequests = () => {
+    apiGet("MedicationRequest", token)
+      .then(data => setRequests(data))
+      .catch(() => setMsg("Erro ao carregar pedidos."));
+  };
+
+  useEffect(() => {
+    loadRequests();
+    // eslint-disable-next-line
+  }, []);
+
+  // POST
+  const adicionar = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_BASE}/MedicationRequest`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(novo)
+      });
+      if (res.ok) {
+        setMsg("Pedido criado!");
+        setNovo({ utenteNome: "", produtoNome: "", quantidade: "", dataPedido: "" });
+        loadRequests();
+      } else {
+        setMsg("Erro ao criar pedido.");
+      }
+    } catch (err) {
+      setMsg("Erro ao ligar ao backend.");
+    }
+  };
+
+  // PUT
+  const guardarEdicao = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_BASE}/MedicationRequest/${edit.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(edit)
+      });
+      if (res.ok) {
+        setMsg("Pedido atualizado!");
+        setEdit(null);
+        loadRequests();
+      } else {
+        setMsg("Erro ao editar pedido.");
+      }
+    } catch (err) {
+      setMsg("Erro ao ligar ao backend.");
+    }
+  };
+
+  // DELETE
+  const remover = async (id) => {
+    try {
+      const res = await fetch(`${API_BASE}/MedicationRequest/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token }
+      });
+      if (res.ok) {
+        setMsg("Pedido removido!");
+        loadRequests();
+      } else {
+        setMsg("Erro ao remover pedido.");
+      }
+    } catch (err) {
+      setMsg("Erro ao ligar ao backend.");
+    }
+  };
+
+  return (
+    <div>
+      <h2>Pedidos de Medicação</h2>
+      {msg && <div style={{ color: 'red' }}>{msg}</div>}
+
+      <h3>Novo Pedido</h3>
+      <form onSubmit={adicionar}>
+        <input name="utenteNome" placeholder="Nome do Utente" value={novo.utenteNome} onChange={e => setNovo({ ...novo, utenteNome: e.target.value })} required />
+        <input name="produtoNome" placeholder="Medicamento" value={novo.produtoNome} onChange={e => setNovo({ ...novo, produtoNome: e.target.value })} required />
+        <input name="quantidade" type="number" placeholder="Quantidade" value={novo.quantidade} onChange={e => setNovo({ ...novo, quantidade: e.target.value })} required />
+        <input name="dataPedido" type="date" placeholder="Data" value={novo.dataPedido} onChange={e => setNovo({ ...novo, dataPedido: e.target.value })} required />
+        <button type="submit">Criar</button>
+      </form>
+
+      <ul>
+        {requests.length === 0 && <li>Nenhum pedido encontrado.</li>}
+        {requests.map(item => (
+          <li key={item.id}>
+            {edit && edit.id === item.id ? (
+              <form onSubmit={guardarEdicao}>
+                <input value={edit.utenteNome} onChange={e => setEdit({ ...edit, utenteNome: e.target.value })} />
+                <input value={edit.produtoNome} onChange={e => setEdit({ ...edit, produtoNome: e.target.value })} />
+                <input type="number" value={edit.quantidade} onChange={e => setEdit({ ...edit, quantidade: e.target.value })} />
+                <input type="date" value={edit.dataPedido} onChange={e => setEdit({ ...edit, dataPedido: e.target.value })} />
+                <button type="submit">Guardar</button>
+                <button type="button" onClick={() => setEdit(null)}>Cancelar</button>
+              </form>
+            ) : (
+              <>
+                <b>{item.utenteNome}</b> pediu <b>{item.produtoNome}</b> x{item.quantidade} em {item.dataPedido}<br />
+                <button onClick={() => setEdit(item)}>Editar</button>
+                <button onClick={() => remover(item.id)}>Remover</button>
+                <hr />
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default MedicationRequests;
