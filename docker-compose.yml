@@ -1,29 +1,39 @@
 version: '3.8'
-services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      SA_PASSWORD: "sa"
-      ACCEPT_EULA: "Y"
-    ports:
-      - "1433:1433"
-    # volumes:  # Comentado porque não funciona para seed scripts em SQL Server
 
+services:
   backend:
-    build: ./backend
+    build: ./backend/SanaVitaAPI
+    container_name: sanavita-backend
     ports:
       - "8080:80"
-    environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=SanaVita;User Id=sa;Password=sa;
-      - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - sqlserver
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=SanaVita;User Id=sa;Password=YourStrong(!)Password;"
+    networks:
+      - sanavita-net
 
   frontend:
     build: ./frontend
+    container_name: sanavita-frontend
     ports:
-      - "5173:80"
+      - "5173:80"  # ou 3000:80 se for React puro
+    networks:
+      - sanavita-net
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sanavita-sql
     environment:
-      - REACT_APP_API_URL=http://backend/api
-    depends_on:
-      - backend
+      SA_PASSWORD: "YourStrong(!)Password"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./database:/var/opt/mssql/backup
+    networks:
+      - sanavita-net
+
+networks:
+  sanavita-net:
+    driver: bridge
